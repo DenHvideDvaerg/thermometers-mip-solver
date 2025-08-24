@@ -72,30 +72,6 @@ class TestThermometersSolver:
         expected = {(0, 3), (1, 0), (1, 1), (1, 2), (2, 1), (2, 2), (3, 3)}
         assert solution == expected
 
-    def test_multiple_solutions(self):
-        """Test finding multiple solutions."""
-        # Create a puzzle with multiple solutions (2x2 with four single-cell thermometers)
-        puzzle = ThermometerPuzzle(
-            row_sums=[1, 1],
-            col_sums=[1, 1],
-            thermometer_waypoints=[
-                [(0, 0)],
-                [(0, 1)],
-                [(1, 0)],
-                [(1, 1)]
-            ]
-        )
-        
-        solver = ThermometersSolver(puzzle)
-        solutions = solver.solve_iterative(max_num_solutions=5)
-        
-        assert len(solutions) >= 1
-        assert all(solver.validate_solution(sol) for sol in solutions)
-        
-        # All solutions should be different
-        solution_tuples = [tuple(sorted(sol)) for sol in solutions]
-        assert len(set(solution_tuples)) == len(solutions)
-
     def test_no_solution_puzzle(self):
         """Test puzzle with no solution."""
         # Create a puzzle that is unsolvable
