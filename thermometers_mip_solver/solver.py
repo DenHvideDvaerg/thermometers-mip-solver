@@ -1,6 +1,6 @@
 from .puzzle import ThermometerPuzzle
 from ortools.linear_solver import pywraplp
-from typing import Dict, Set, Tuple, Optional, List
+from typing import Dict, Set, Tuple, Optional
 
 
 class ThermometersSolver:
@@ -17,7 +17,7 @@ class ThermometersSolver:
         
         Args:
             puzzle: The ThermometerPuzzle instance to solve
-            solver_type: The OR-Tools solver to use (default: 'SCIP')
+            solver_type: The OR-Tools solver_id to use (default: 'SCIP')
             
         Raises:
             ValueError: If puzzle is invalid or solver creation fails
