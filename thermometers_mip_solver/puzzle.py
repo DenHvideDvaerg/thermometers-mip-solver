@@ -1,26 +1,96 @@
 from typing import List, Set, Tuple, Optional
 
 
+def _horizontal_range(row: int, start_col: int, end_col: int) -> List[Tuple[int, int]]:
+    """Generate a horizontal sequence of (row, col) tuples"""
+    if start_col <= end_col:
+        return [(row, col) for col in range(start_col, end_col + 1)]
+    else:
+        return [(row, col) for col in range(start_col, end_col - 1, -1)]
+
+
+def _vertical_range(col: int, start_row: int, end_row: int) -> List[Tuple[int, int]]:
+    """Generate a vertical sequence of (row, col) tuples"""
+    if start_row <= end_row:
+        return [(row, col) for row in range(start_row, end_row + 1)]
+    else:
+        return [(row, col) for row in range(start_row, end_row - 1, -1)]
+
+
+def _create_thermometer_path(waypoints: List[Tuple[int, int]]) -> List[Tuple[int, int]]:
+    """
+    Create a thermometer path from a list of waypoints.
+    
+    Args:
+        waypoints: List of (row, col) tuples representing key points in the thermometer path
+        
+    Returns:
+        List of (row, col) tuples representing the complete thermometer path
+        
+    Raises:
+        ValueError: If any two consecutive waypoints are not horizontally or vertically aligned
+        
+    Example:
+        # For a thermometer that goes horizontally from (0,7) to (0,13)
+        _create_thermometer_path([(0,7), (0,13)])
+        # Returns: [(0,7), (0,8), (0,9), (0,10), (0,11), (0,12), (0,13)]
+        
+        # For an L-shaped thermometer: vertical then horizontal
+        _create_thermometer_path([(2,0), (0,0), (0,3)])  
+        # Returns: [(2,0), (1,0), (0,0), (0,1), (0,2), (0,3)]
+    """
+    if len(waypoints) < 2:
+        return waypoints[:]
+    
+    path = [waypoints[0]]  # Start with the first waypoint
+    
+    for i in range(1, len(waypoints)):
+        start_row, start_col = waypoints[i-1]
+        end_row, end_col = waypoints[i]
+        
+        # Check if waypoints are aligned horizontally or vertically
+        if start_row == end_row:
+            # Horizontal segment
+            if start_col != end_col:
+                segment = _horizontal_range(start_row, start_col, end_col)[1:]  # Exclude start (already in path)
+                path.extend(segment)
+            # If start_col == end_col, it's the same point, so we don't add anything
+        elif start_col == end_col:
+            # Vertical segment
+            if start_row != end_row:
+                segment = _vertical_range(start_col, start_row, end_row)[1:]  # Exclude start (already in path)
+                path.extend(segment)
+            # If start_row == end_row, it's the same point, so we don't add anything
+        else:
+            # Not aligned horizontally or vertically - this is invalid for thermometers
+            raise ValueError(f"Waypoints ({start_row},{start_col}) and ({end_row},{end_col}) are not horizontally or vertically aligned. Thermometers can only move in cardinal directions.")
+    
+    return path
+
+
 class Thermometer:
     """
     Represents a thermometer as a sequence of connected cells.
     Mercury fills from the bulb (first position) towards the top.
     """
     
-    def __init__(self, thermometer_id: int, positions: List[Tuple[int, int]]):
+    def __init__(self, thermometer_id: int, waypoints: List[Tuple[int, int]]):
         """
         Args:
             thermometer_id: Unique identifier
-            positions: List of (row, col) tuples from bulb to top
+            waypoints: List of (row, col) waypoints defining the thermometer path.
+                      Waypoints will be expanded into a full path automatically.
         """
-        if not positions:
-            raise ValueError("Thermometer must have at least one position")
+        if not waypoints:
+            raise ValueError("Thermometer must have at least one waypoint")
         
-        if len(set(positions)) != len(positions):
+        # Expand waypoints into full path
+        self.positions = _create_thermometer_path(waypoints)
+        
+        if len(set(self.positions)) != len(self.positions):
             raise ValueError("Thermometer cannot have duplicate positions")
         
         self.id = thermometer_id
-        self.positions = positions.copy()
         self._validate_connectivity()
     
     def _validate_connectivity(self) -> None:
@@ -78,13 +148,14 @@ class ThermometerPuzzle:
         self, 
         row_sums: List[int],
         col_sums: List[int], 
-        thermometer_paths: List[List[Tuple[int, int]]]
+        thermometer_waypoints: List[List[Tuple[int, int]]]
     ):
         """
         Args:
             row_sums: Required filled cells per row
             col_sums: Required filled cells per column
-            thermometer_paths: List of position lists, each defining a thermometer
+            thermometer_waypoints: List of waypoint lists, each defining a thermometer 
+                                 (waypoints will be expanded to full paths automatically)
         """
         if not row_sums or not col_sums:
             raise ValueError("Row and column sums cannot be empty")
@@ -94,7 +165,7 @@ class ThermometerPuzzle:
         
         if sum(row_sums) != sum(col_sums):
             raise ValueError("Sum of row sums must equal sum of column sums")
-        
+
         self.height = len(row_sums)
         self.width = len(col_sums)
         self.row_sums = row_sums.copy()
@@ -107,16 +178,16 @@ class ThermometerPuzzle:
         if any(s > self.height for s in col_sums):
             raise ValueError("Column sum cannot exceed grid height")
         
-        # Create thermometers
-        if not thermometer_paths:
-            raise ValueError("At least one thermometer path must be provided")
+        # Create thermometers from waypoints
+        if not thermometer_waypoints:
+            raise ValueError("At least one thermometer waypoints list must be provided")
         
         self.thermometers = []
-        for i, path in enumerate(thermometer_paths):
-            if not path:
-                raise ValueError(f"Thermometer path {i} is empty")
-            self.thermometers.append(Thermometer(i, path))
-        
+        for i, waypoints in enumerate(thermometer_waypoints):
+            if not waypoints:
+                raise ValueError(f"Thermometer waypoints {i} is empty")
+            self.thermometers.append(Thermometer(i, waypoints))
+
         self._validate_grid_coverage()
     
     def _validate_grid_coverage(self) -> None:
