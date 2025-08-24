@@ -115,3 +115,27 @@ class TestThermometersSolver:
         assert info['grid_size'] == '2x2'
         assert info['num_thermometers'] == 2
         assert info['total_cells'] == 4
+
+    def test_solve_curved_4x4_puzzle(self):
+        """Test solving the curved 4x4 example puzzle."""
+        puzzle = ThermometerPuzzle(
+            row_sums=[3, 1, 2, 1],
+            col_sums=[1, 2, 3, 1],
+            thermometer_waypoints=[
+                [(0, 0), (1, 0), (1, 1), (0, 1)],
+                [(2, 2), (0, 2), (0, 3), (2, 3)],
+                [(3, 1), (2, 1), (2, 0), (3, 0)],
+                [(3, 3), (3, 2)],
+            ]
+        )
+        
+        solver = ThermometersSolver(puzzle)
+        solution = solver.solve()
+        
+        assert solution is not None
+        assert len(solution) == 7  # Should fill 7 cells total
+        assert solver.validate_solution(solution)
+        
+        # Should match the known solution
+        expected = {(0, 0), (0, 2), (0, 3), (1, 2), (2, 1), (2, 2), (3, 1)}
+        assert solution == expected

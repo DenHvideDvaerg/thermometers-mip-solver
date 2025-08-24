@@ -19,6 +19,20 @@ def example_4x4():
     )
     return puzzle
 
+def example_4x4_curved():
+    """Curved 4x4 Thermometers Puzzle ID: 19,253,725 from puzzle-thermometers.com"""
+    puzzle = ThermometerPuzzle(
+        row_sums=[3, 1, 2, 1],
+        col_sums=[1, 2, 3, 1],
+        thermometer_waypoints=[
+            [(0, 0), (1, 0), (1, 1), (0, 1)],
+            [(2, 2), (0, 2), (0, 3), (2, 3)],
+            [(3, 1), (2, 1), (2, 0), (3, 0)],
+            [(3, 3), (3, 2)],
+        ]
+    )
+    return puzzle
+
 def main():
     print("="*80)
     print("4x4 THERMOMETERS PUZZLE EXAMPLE")
@@ -26,6 +40,13 @@ def main():
     
     puzzle_4x4 = example_4x4()
     solve_puzzle(puzzle_4x4, "4x4")
+
+    print("="*80)
+    print("4x4 CURVED THERMOMETERS PUZZLE EXAMPLE")
+    print("="*80)
+
+    puzzle_4x4_curved = example_4x4_curved()
+    solve_puzzle(puzzle_4x4_curved, "4x4 Curved")
 
 def solve_puzzle(puzzle, name):
     """Solve a thermometer puzzle and display results"""
@@ -72,7 +93,7 @@ def solve_puzzle(puzzle, name):
             print(f"MIP solution: {sorted(solution)}")
             print(f"Solutions match: {solution == manual_solution}")
         else:
-            print(f"Solution preview (first 10 cells): {sorted(list(solution))[:10]}")
+            print(f"Solution: {sorted(list(solution))}")
     else:
         print("No solution found by solver!")
 
