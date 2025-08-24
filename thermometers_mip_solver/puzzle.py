@@ -28,7 +28,8 @@ def _create_thermometer_path(waypoints: List[Tuple[int, int]]) -> List[Tuple[int
         List of (row, col) tuples representing the complete thermometer path
         
     Raises:
-        ValueError: If any two consecutive waypoints are not horizontally or vertically aligned
+        ValueError: If any two consecutive waypoints are not horizontally or vertically aligned,
+                   or if the thermometer would have less than 2 cells
         
     Example:
         # For a thermometer that goes horizontally from (0,7) to (0,13)
@@ -40,7 +41,7 @@ def _create_thermometer_path(waypoints: List[Tuple[int, int]]) -> List[Tuple[int
         # Returns: [(2,0), (1,0), (0,0), (0,1), (0,2), (0,3)]
     """
     if len(waypoints) < 2:
-        return waypoints[:]
+        raise ValueError("Thermometers must have at least 2 cells. Single-cell thermometers are not allowed.")
     
     path = [waypoints[0]]  # Start with the first waypoint
     

@@ -94,10 +94,10 @@ class TestThermometersSolver:
     def test_solver_info(self):
         """Test getting solver information."""
         puzzle = ThermometerPuzzle(
-            row_sums=[1],
-            col_sums=[1],
+            row_sums=[1, 1],
+            col_sums=[1, 1],
             thermometer_waypoints=[
-                [(0, 0)]
+                [(0, 0), (1, 0)], [(0, 1), (1, 1)]
             ]
         )
         
@@ -111,7 +111,7 @@ class TestThermometersSolver:
         assert 'num_thermometers' in info
         assert 'total_cells' in info
         
-        assert info['num_variables'] == 1  # 1x1 grid
-        assert info['grid_size'] == '1x1'
-        assert info['num_thermometers'] == 1
-        assert info['total_cells'] == 1
+        assert info['num_variables'] == 4  # 2x2 grid
+        assert info['grid_size'] == '2x2'
+        assert info['num_thermometers'] == 2
+        assert info['total_cells'] == 4
