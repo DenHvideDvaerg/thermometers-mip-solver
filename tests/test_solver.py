@@ -10,7 +10,7 @@ class TestThermometersSolver:
         puzzle = ThermometerPuzzle(
             row_sums=[1, 1],
             col_sums=[1, 1],
-            thermometer_paths=[
+            thermometer_waypoints=[
                 [(0, 0), (0, 1)],
                 [(1, 1), (1, 0)]
             ]
@@ -31,7 +31,7 @@ class TestThermometersSolver:
         puzzle = ThermometerPuzzle(
             row_sums=[1, 1],
             col_sums=[1, 1],
-            thermometer_paths=[
+            thermometer_waypoints=[
                 [(0, 0), (0, 1)],
                 [(1, 1), (1, 0)]
             ]
@@ -50,7 +50,7 @@ class TestThermometersSolver:
         puzzle = ThermometerPuzzle(
             row_sums=[1, 3, 2, 1],
             col_sums=[1, 2, 2, 2],
-            thermometer_paths=[
+            thermometer_waypoints=[
                 [(0, 2), (0, 1), (0, 0)],  
                 [(0, 3), (1, 3)],
                 [(1, 0), (2, 0)],
@@ -72,30 +72,6 @@ class TestThermometersSolver:
         expected = {(0, 3), (1, 0), (1, 1), (1, 2), (2, 1), (2, 2), (3, 3)}
         assert solution == expected
 
-    def test_multiple_solutions(self):
-        """Test finding multiple solutions."""
-        # Create a puzzle with multiple solutions (2x2 with four single-cell thermometers)
-        puzzle = ThermometerPuzzle(
-            row_sums=[1, 1],
-            col_sums=[1, 1],
-            thermometer_paths=[
-                [(0, 0)],
-                [(0, 1)],
-                [(1, 0)],
-                [(1, 1)]
-            ]
-        )
-        
-        solver = ThermometersSolver(puzzle)
-        solutions = solver.solve_iterative(max_num_solutions=5)
-        
-        assert len(solutions) >= 1
-        assert all(solver.validate_solution(sol) for sol in solutions)
-        
-        # All solutions should be different
-        solution_tuples = [tuple(sorted(sol)) for sol in solutions]
-        assert len(set(solution_tuples)) == len(solutions)
-
     def test_no_solution_puzzle(self):
         """Test puzzle with no solution."""
         # Create a puzzle that is unsolvable
@@ -103,7 +79,7 @@ class TestThermometersSolver:
         puzzle = ThermometerPuzzle(
             row_sums=[1, 1],
             col_sums=[1, 1],
-            thermometer_paths=[
+            thermometer_waypoints=[
                 [(0, 0), (1, 0)],
                 [(0, 1), (1, 1)]
             ]
@@ -118,10 +94,10 @@ class TestThermometersSolver:
     def test_solver_info(self):
         """Test getting solver information."""
         puzzle = ThermometerPuzzle(
-            row_sums=[1],
-            col_sums=[1],
-            thermometer_paths=[
-                [(0, 0)]
+            row_sums=[1, 1],
+            col_sums=[1, 1],
+            thermometer_waypoints=[
+                [(0, 0), (1, 0)], [(0, 1), (1, 1)]
             ]
         )
         
@@ -135,7 +111,31 @@ class TestThermometersSolver:
         assert 'num_thermometers' in info
         assert 'total_cells' in info
         
-        assert info['num_variables'] == 1  # 1x1 grid
-        assert info['grid_size'] == '1x1'
-        assert info['num_thermometers'] == 1
-        assert info['total_cells'] == 1
+        assert info['num_variables'] == 4  # 2x2 grid
+        assert info['grid_size'] == '2x2'
+        assert info['num_thermometers'] == 2
+        assert info['total_cells'] == 4
+
+    def test_solve_curved_4x4_puzzle(self):
+        """Test solving the curved 4x4 example puzzle."""
+        puzzle = ThermometerPuzzle(
+            row_sums=[3, 1, 2, 1],
+            col_sums=[1, 2, 3, 1],
+            thermometer_waypoints=[
+                [(0, 0), (1, 0), (1, 1), (0, 1)],
+                [(2, 2), (0, 2), (0, 3), (2, 3)],
+                [(3, 1), (2, 1), (2, 0), (3, 0)],
+                [(3, 3), (3, 2)],
+            ]
+        )
+        
+        solver = ThermometersSolver(puzzle)
+        solution = solver.solve()
+        
+        assert solution is not None
+        assert len(solution) == 7  # Should fill 7 cells total
+        assert solver.validate_solution(solution)
+        
+        # Should match the known solution
+        expected = {(0, 0), (0, 2), (0, 3), (1, 2), (2, 1), (2, 2), (3, 1)}
+        assert solution == expected

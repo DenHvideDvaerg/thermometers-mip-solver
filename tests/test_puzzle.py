@@ -17,16 +17,13 @@ class TestThermometer:
         assert thermo.top_position == (0, 2)
 
     def test_single_cell_thermometer(self):
-        """Test a thermometer with only one cell."""
-        thermo = Thermometer(0, [(1, 1)])
-        
-        assert thermo.length == 1
-        assert thermo.bulb_position == (1, 1)
-        assert thermo.top_position == (1, 1)
+        """Test that single-cell thermometers raise ValueError."""
+        with pytest.raises(ValueError, match="Thermometers must have at least 2 cells"):
+            Thermometer(0, [(1, 1)])
 
     def test_empty_positions(self):
-        """Test that empty positions raise ValueError."""
-        with pytest.raises(ValueError, match="Thermometer must have at least one position"):
+        """Test that empty waypoints raise ValueError."""
+        with pytest.raises(ValueError, match="Thermometer must have at least one waypoint"):
             Thermometer(1, [])
 
     def test_duplicate_positions(self):
@@ -34,15 +31,41 @@ class TestThermometer:
         with pytest.raises(ValueError, match="Thermometer cannot have duplicate positions"):
             Thermometer(1, [(0, 0), (0, 1), (0, 0)])
 
-    def test_non_adjacent_positions(self):
-        """Test that non-adjacent positions raise ValueError."""
-        # Gap between positions
-        with pytest.raises(ValueError, match="Positions .* are not adjacent"):
-            Thermometer(1, [(0, 0), (0, 2)])
+    def test_waypoint_expansion(self):
+        """Test that waypoints are expanded correctly into full paths."""
+        # Horizontal expansion (left to right)
+        thermo1 = Thermometer(1, [(0, 0), (0, 2)])
+        assert thermo1.positions == [(0, 0), (0, 1), (0, 2)]
         
-        # Diagonal positions
-        with pytest.raises(ValueError, match="Positions .* are not adjacent"):
+        # Horizontal expansion (right to left)
+        thermo2 = Thermometer(2, [(0, 3), (0, 1)])
+        assert thermo2.positions == [(0, 3), (0, 2), (0, 1)]
+        
+        # Vertical expansion (top to bottom)
+        thermo3 = Thermometer(3, [(0, 0), (2, 0)])
+        assert thermo3.positions == [(0, 0), (1, 0), (2, 0)]
+        
+        # Vertical expansion (bottom to top)
+        thermo4 = Thermometer(4, [(3, 0), (1, 0)])
+        assert thermo4.positions == [(3, 0), (2, 0), (1, 0)]
+        
+        # L-shaped path (vertical then horizontal)
+        thermo5 = Thermometer(5, [(2, 0), (0, 0), (0, 3)])
+        assert thermo5.positions == [(2, 0), (1, 0), (0, 0), (0, 1), (0, 2), (0, 3)]
+        
+        # Same waypoint twice (no expansion needed)
+        thermo6 = Thermometer(6, [(1, 1), (1, 1)])
+        assert thermo6.positions == [(1, 1)]
+
+    def test_invalid_diagonal_waypoints(self):
+        """Test that diagonal waypoints raise ValueError."""
+        # Diagonal waypoints are not allowed - thermometers can only move in cardinal directions
+        with pytest.raises(ValueError, match="Waypoints .* are not horizontally or vertically aligned"):
             Thermometer(1, [(0, 0), (1, 1)])
+        
+        # Another diagonal case
+        with pytest.raises(ValueError, match="Waypoints .* are not horizontally or vertically aligned"):
+            Thermometer(2, [(2, 3), (1, 4)])
 
     def test_valid_adjacent_positions(self):
         """Test various valid adjacent position patterns."""
@@ -102,7 +125,7 @@ class TestThermometerPuzzle:
         puzzle = ThermometerPuzzle(
             row_sums=[1, 1],
             col_sums=[1, 1],
-            thermometer_paths=[
+            thermometer_waypoints=[
                 [(0, 0), (0, 1)],
                 [(1, 1), (1, 0)]
             ]
@@ -147,34 +170,33 @@ class TestThermometerPuzzle:
         with pytest.raises(ValueError, match="Column sum cannot exceed grid height"):
             ThermometerPuzzle([2], [2, 0], [[(0, 0)], [(0, 1)]])  # height=1, but col sum 2 > 1
 
-    def test_no_thermometer_paths(self):
-        """Test that no thermometer paths raises ValueError."""
-        with pytest.raises(ValueError, match="At least one thermometer path must be provided"):
+    def test_no_thermometer_waypoints(self):
+        """Test that no thermometer waypoints raises ValueError."""
+        with pytest.raises(ValueError, match="At least one thermometer waypoints list must be provided"):
             ThermometerPuzzle([1], [1], [])
 
-    def test_empty_thermometer_path(self):
-        """Test that empty thermometer path raises ValueError."""
-        with pytest.raises(ValueError, match="Thermometer path 0 is empty"):
+    def test_empty_thermometer_waypoints(self):
+        """Test that empty thermometer waypoints raises ValueError."""
+        with pytest.raises(ValueError, match="Thermometer waypoints 0 is empty"):
             ThermometerPuzzle([1], [1], [[]])
 
     def test_position_out_of_bounds(self):
         """Test that out-of-bounds positions raise ValueError."""
-        # Position (0, 2) is outside 1x1 grid
         with pytest.raises(ValueError, match="Position .* outside grid bounds"):
-            ThermometerPuzzle([1], [1], [[(0, 2)]])
+            ThermometerPuzzle([1, 1], [2], [[(0, 2), (1, 2)]])
         
         # Negative position
         with pytest.raises(ValueError, match="Position .* outside grid bounds"):
-            ThermometerPuzzle([1], [1], [[(-1, 0)]])
+            ThermometerPuzzle([1, 1], [1, 1], [[(0, 0), (1, 0)], [(-1, 0), (-1, 1)]])
 
     def test_overlapping_thermometers(self):
         """Test that overlapping thermometers raise ValueError."""
         with pytest.raises(ValueError, match="Position .* covered by multiple thermometers"):
             ThermometerPuzzle(
-                [2, 0], [1, 1], 
+                [2, 0], [1, 1],
                 [
-                    [(0, 0), (0, 1)], 
-                    [(0, 1)]
+                    [(0, 0), (0, 1)],
+                    [(0, 1), (1, 1)]
                 ]  # Both cover (0, 1)
             )
 
@@ -183,7 +205,7 @@ class TestThermometerPuzzle:
         with pytest.raises(ValueError, match="Grid not completely filled"):
             ThermometerPuzzle(
                 [1, 1], [1, 1],
-                [[(0, 0)]]  # Only covers 1 of 4 positions
+                [[(0, 0), (1, 0)]]  # Only covers 2 of 4 positions
             )
 
     def test_valid_solution_checking(self):
@@ -191,7 +213,7 @@ class TestThermometerPuzzle:
         puzzle = ThermometerPuzzle(
             row_sums=[1, 2],
             col_sums=[2, 1],
-            thermometer_paths=[
+            thermometer_waypoints=[
                 [(1, 0), (0, 0)],  # Vertical thermometer
                 [(1, 1), (0, 1)]   # Another vertical thermometer
             ]
@@ -235,23 +257,23 @@ class TestThermometerPuzzle:
         """Test getting position to thermometer mapping."""
         puzzle = ThermometerPuzzle(
             [1, 1], [1, 1],
-            [[(0, 0)], [(0, 1)], [(1, 0)], [(1, 1)]]
+            [[(0, 0), (0, 1)], [(1, 0), (1, 1)]]
         )
         
         pos_map = puzzle.get_position_to_thermometer_map()
         
         assert len(pos_map) == 4
         assert pos_map[(0, 0)].id == 0
-        assert pos_map[(0, 1)].id == 1
-        assert pos_map[(1, 0)].id == 2
-        assert pos_map[(1, 1)].id == 3
+        assert pos_map[(0, 1)].id == 0
+        assert pos_map[(1, 0)].id == 1
+        assert pos_map[(1, 1)].id == 1
 
     def test_complex_puzzle(self):
         """Test with the real example."""
         puzzle = ThermometerPuzzle(
             row_sums=[1, 3, 2, 1],
             col_sums=[1, 2, 2, 2],
-            thermometer_paths=[
+            thermometer_waypoints=[
                 [(0, 2), (0, 1), (0, 0)],  
                 [(0, 3), (1, 3)],
                 [(1, 0), (2, 0)],
@@ -273,10 +295,10 @@ class TestThermometerPuzzle:
     def test_repr(self):
         """Test string representation."""
         puzzle = ThermometerPuzzle(
-            [1], [1],
-            [[(0, 0)]]
+            [1, 1], [1, 1],
+            [[(0, 0), (0, 1)], [(1, 0), (1, 1)]]
         )
-        assert repr(puzzle) == "ThermometerPuzzle(1x1, 1 thermometers)"
+        assert repr(puzzle) == "ThermometerPuzzle(2x2, 2 thermometers)"
 
 
 class TestThermometerIntegration:
@@ -285,29 +307,29 @@ class TestThermometerIntegration:
     def test_thermometer_properties_in_puzzle(self):
         """Test that thermometer properties work correctly within puzzle context."""
         puzzle = ThermometerPuzzle(
-            [2, 1], [1, 2],
-            [[(0, 0), (0, 1), (1, 1)], [(1, 0)]]  # L-shaped thermometer + single cell to fill grid
+            [2, 2], [2, 2],
+            [[(0, 0), (1, 0), (1, 1), (0,1)]]  # Single U-shaped thermometer in 2x2 grid
         )
         
         thermo = puzzle.thermometers[0]
-        assert thermo.length == 3
+        assert thermo.length == 4
         assert thermo.bulb_position == (0, 0)
-        assert thermo.top_position == (1, 1)
+        assert thermo.top_position == (0, 1)
         
         # Test valid partial fills
         assert thermo.is_valid_fill_state({(0, 0)})  # Bulb only
-        assert thermo.is_valid_fill_state({(0, 0), (0, 1)})  # First two
-        assert thermo.is_valid_fill_state({(0, 0), (0, 1), (1, 1)})  # All
-        
+        assert thermo.is_valid_fill_state({(0, 0), (1, 0)})  # First two
+        assert thermo.is_valid_fill_state({(0, 0), (1, 0), (1, 1), (0, 1)})  # All cells
+
         # Test invalid fills
-        assert not thermo.is_valid_fill_state({(0, 1)})  # Skip bulb
-        assert not thermo.is_valid_fill_state({(1, 1)})  # Only top
+        assert not thermo.is_valid_fill_state({(1, 0)})  # Skip bulb
+        assert not thermo.is_valid_fill_state({(0, 1)})  # Only top
 
     def test_puzzle_validation_catches_thermometer_errors(self):
         """Test that puzzle validation catches thermometer creation errors."""
-        # Non-adjacent positions should be caught during thermometer creation
-        with pytest.raises(ValueError, match="Positions .* are not adjacent"):
+        # Diagonal waypoints should be caught during thermometer creation
+        with pytest.raises(ValueError, match="Waypoints .* are not horizontally or vertically aligned"):
             ThermometerPuzzle(
                 [1, 1], [1, 1],
-                [[(0, 0), (1, 1)]]  # Diagonal positions
+                [[(0, 0), (1, 1)]]  # Diagonal waypoints
             )
