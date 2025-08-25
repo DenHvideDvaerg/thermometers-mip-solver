@@ -25,59 +25,108 @@ pip install thermometers-mip-solver
 - Google OR-Tools
 - pytest (for testing)
 
+## Example Puzzles
+
+### 6x6 Puzzle with Straight Thermometers
+
+This 6x6 puzzle demonstrates the solver with straight thermometers of various lengths and orientations:
+
+| Puzzle | Solution |
+|--------|----------|
+| <img src="images/6x6_14,708,221.png" width="200"> | <img src="images/6x6_14,708,221_solution.png" width="200"> |
+
+```python
+def example_6x6():
+    """6x6 Thermometers Puzzle ID: 14,708,221 from puzzle-thermometers.com"""
+    puzzle = ThermometerPuzzle(
+        row_sums=[3, 2, 1, 2, 5, 4],
+        col_sums=[3, 2, 2, 4, 4, 2],
+        thermometer_waypoints=[
+            [(0, 0), (1, 0)],               # Vertical thermometer starting in row 0
+            [(0, 2), (0, 1)],               # Horizontal thermometer starting in row 0
+            [(1, 2), (1, 1)],               # Horizontal thermometer starting in row 1
+            [(1, 3), (0, 3)],               # Vertical thermometer starting in row 1
+            [(2, 0), (2, 2)],               # Horizontal thermometer starting in row 2
+            [(3, 2), (3, 1)],               # Horizontal thermometer starting in row 3
+            [(3, 3), (2, 3)],               # Vertical thermometer starting in row 3
+            [(3, 4), (0, 4)],               # Long vertical thermometer starting in row 3
+            [(3, 5), (0, 5)],               # Long vertical thermometer starting in row 3
+            [(4, 0), (3, 0)],               # Vertical thermometer starting in row 4
+            [(4, 1), (4, 3)],               # Horizontal thermometer starting in row 4
+            [(4, 5), (4, 4)],               # Horizontal thermometer starting in row 4
+            [(5, 0), (5, 5)],               # Long horizontal thermometer starting in row 5
+        ]
+    )
+    return puzzle
+```
+
+### 4x4 Puzzle with Curved Thermometers
+
+This 4x4 puzzle shows how the solver handles curved thermometers with multiple waypoints, creating L-shaped and complex paths:
+
+| Puzzle | Solution |
+|--------|----------|
+| <img src="images/4x4_curved_19,253,725.png" width="200"> | <img src="images/4x4_curved_19,253,725_solution.png" width="200"> |
+
+```python
+def example_4x4_curved():
+    """Curved 4x4 Thermometers Puzzle ID: 19,253,725 from puzzle-thermometers.com"""
+    puzzle = ThermometerPuzzle(
+        row_sums=[3, 1, 2, 1],
+        col_sums=[1, 2, 3, 1],
+        thermometer_waypoints=[
+            [(0, 0), (1, 0), (1, 1), (0, 1)],    # U-shaped thermometer starting in row 0
+            [(2, 2), (0, 2), (0, 3), (2, 3)],    # ∩-shaped thermometer starting in row 2
+            [(3, 1), (2, 1), (2, 0), (3, 0)],    # ∩-shaped thermometer starting in row 3
+            [(3, 3), (3, 2)],                    # Straight thermometer starting in row 3
+        ]
+    )
+    return puzzle
+```
+
 ## Usage
 
 ```python
 from thermometers_mip_solver import ThermometerPuzzle, ThermometersSolver
 
-# Define a 4x4 puzzle using waypoints to describe thermometer shapes
-puzzle = ThermometerPuzzle(
-    row_sums=[1, 3, 2, 1],              # Mercury cells per row
-    col_sums=[1, 2, 2, 2],              # Mercury cells per column
-    thermometer_waypoints=[
-        [(0, 2), (0, 0)],               # Horizontal thermometer
-        [(0, 3), (1, 3)],               # Vertical thermometer
-        [(1, 0), (2, 0)],               # Vertical thermometer
-        [(1, 1), (1, 2)],               # Horizontal thermometer
-        [(2, 1), (2, 3)],               # Horizontal thermometer
-        [(3, 1), (3, 0)],               # Horizontal thermometer
-        [(3, 3), (3, 2)]                # Horizontal thermometer
-    ]
-)
+# Load example puzzles
+puzzle_6x6 = example_6x6()          # 6x6 puzzle with straight thermometers
+puzzle_curved = example_4x4_curved() # 4x4 puzzle with curved thermometers
 
-# Solve the puzzle
-solver = ThermometersSolver(puzzle)
-solution = solver.solve()
+# Solve the 6x6 puzzle
+print("Solving 6x6 puzzle...")
+solver_6x6 = ThermometersSolver(puzzle_6x6)
+solution_6x6 = solver_6x6.solve()
 
-if solution:
-    print(f"Solution found! Filled positions: {solution}")
+if solution_6x6:
+    print(f"6x6 Solution found! Filled positions: {len(solution_6x6)} cells")
     
     # Validate the solution
-    is_valid, errors = puzzle.validate_solution(solution)
+    is_valid, errors = puzzle_6x6.validate_solution(solution_6x6)
     print(f"Solution is valid: {is_valid}")
     
     # Get solver information
-    info = solver.get_solver_info()
-    print(f"Model consists of {info['variables']} variables and {info['constraints']} constraints")
-else:
-    print("No solution exists")
+    info = solver_6x6.get_solver_info()
+    print(f"Model: {info['variables']} variables, {info['constraints']} constraints")
+
+# Solve the curved 4x4 puzzle
+print("\nSolving curved 4x4 puzzle...")
+solver_curved = ThermometersSolver(puzzle_curved)
+solution_curved = solver_curved.solve()
+
+if solution_curved:
+    print(f"Curved 4x4 Solution found! Filled positions: {len(solution_curved)} cells")
+    print(f"Solution is valid: {puzzle_curved.validate_solution(solution_curved)[0]}")
 ```
 
-## Example Puzzles
+## Waypoint System
 
-### Simple 4x4 Puzzle
+The solver uses a **waypoint-based approach** to define thermometers. You only need to specify key turning points, and the system automatically expands them into complete thermometer paths:
 
-![4x4 Puzzle](images/4x4_curved_19,253,725.png)
-![4x4 Solution](images/4x4_curved_19,253,725_solution.png)
-
-This curved 4x4 puzzle demonstrates thermometers with multiple waypoints, creating L-shaped and more complex paths.
-
-### Complex 6x6 Puzzle
-
-![6x6 Puzzle](images/6x6_14,708,221.png)
-![6x6 Solution](images/6x6_14,708,221_solution.png)
-
-This 6x6 puzzle shows how the solver handles larger grids with multiple thermometers of varying lengths and orientations.
+- **Straight thermometers**: Define with start and end points: `[(0, 0), (0, 3)]`
+- **Curved thermometers**: Add waypoints at each turn: `[(0, 0), (1, 0), (1, 1), (0, 1)]`
+- **Path expansion**: Automatically fills in all cells between waypoints using horizontal/vertical segments
+- **Validation**: Ensures all segments are properly aligned and thermometers have minimum 2 cells
 
 ## Testing
 
@@ -90,7 +139,7 @@ pytest --cov=thermometers_mip_solver           # Run with coverage
 
 ## Mathematical Model
 
-The solver uses **Mixed Integer Programming (MIP)** to model the puzzle constraints. Below is the complete mathematical formulation:
+The solver uses **Mixed Integer Programming (MIP)** to model the puzzle constraints. Google OR-Tools provides the optimization framework, with SCIP as the default solver. Below is the complete mathematical formulation.
 
 ### Problem Definition
 
@@ -119,7 +168,7 @@ Given:
 
 ### Objective Function
 
-This is a constraint satisfaction problem:
+This is a constraint satisfaction problem where the goal is to find a feasible solution that satisfies all constraints without optimizing any particular objective. Therefore, we define the objective function as:
 
 ```
 minimize 0
@@ -173,26 +222,6 @@ x_{rₖ₊₁,cₖ₊₁} ≤ x_{rₖ,cₖ}                          ∀Tᵢ ∈
 x_{i,j} ∈ {0,1}                                    ∀i ∈ I, ∀j ∈ J (Binary variables)
 ```
 
-### Key Features
-
-- **Waypoint-based thermometer definition**: Thermometers are defined using waypoints that automatically expand to full paths
-- **Continuous filling constraint**: Ensures mercury fills from bulb without gaps
-- **Flexible shapes**: Supports straight, L-shaped, and complex curved thermometers
-- **Efficient modeling**: Uses only essential constraints for fast solving
-
-**Solver Backend**: Uses Google OR-Tools with SCIP optimizer by default.
-
-## Algorithm Details
-
-The solver workflow:
-
-1. **Thermometer Path Expansion**: Waypoints are expanded into complete cell sequences using horizontal and vertical segments
-2. **Variable Creation**: Binary variables created for each grid cell (filled/empty)
-3. **Constraint Generation**: Three types of constraints ensure valid solutions:
-   - Row/column sum constraints match target counts
-   - Thermometer continuity constraints prevent gaps in mercury
-4. **MIP Solving**: Google OR-Tools SCIP solver finds feasible solutions
-5. **Solution Validation**: Results are verified against all puzzle rules
 
 ## License
 
