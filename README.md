@@ -37,7 +37,7 @@ This 6x6 puzzle demonstrates the solver with straight thermometers of various le
 
 | Puzzle | Solution |
 |--------|----------|
-| <img src="images/6x6_14,708,221.png" width="200"> | <img src="images/6x6_14,708,221_solution.png" width="200"> |
+| <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/6x6_14,708,221.png" width="200"> | <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/6x6_14,708,221_solution.png" width="200"> |
 
 ```python
 def example_6x6():
@@ -70,7 +70,7 @@ This 4x4 puzzle shows how the solver handles curved thermometers with multiple w
 
 | Puzzle | Solution |
 |--------|----------|
-| <img src="images/4x4_curved_19,253,725.png" width="200"> | <img src="images/4x4_curved_19,253,725_solution.png" width="200"> |
+| <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/4x4_curved_19,253,725.png" width="200"> | <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/4x4_curved_19,253,725_solution.png" width="200"> |
 
 ```python
 def example_4x4_curved():
@@ -272,4 +272,4 @@ x_{i,j} ∈ {0,1}                                    ∀i ∈ I, ∀j ∈ J (Bin
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open source and available under the [MIT License](LICENSE.txt).
