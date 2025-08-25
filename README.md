@@ -88,35 +88,78 @@ def example_4x4_curved():
 
 ```python
 from thermometers_mip_solver import ThermometerPuzzle, ThermometersSolver
+import time
 
-# Load example puzzles
-puzzle_6x6 = example_6x6()          # 6x6 puzzle with straight thermometers
-puzzle_curved = example_4x4_curved() # 4x4 puzzle with curved thermometers
-
-# Solve the 6x6 puzzle
-print("Solving 6x6 puzzle...")
-solver_6x6 = ThermometersSolver(puzzle_6x6)
-solution_6x6 = solver_6x6.solve()
-
-if solution_6x6:
-    print(f"6x6 Solution found! Filled positions: {len(solution_6x6)} cells")
+def solve_puzzle(puzzle, name):
+    """Solve a thermometer puzzle and display results"""
+    print(f"\n" + "="*60)
+    print(f"SOLVING {name.upper()}")
+    print("="*60)
     
-    # Validate the solution
-    is_valid, errors = puzzle_6x6.validate_solution(solution_6x6)
-    print(f"Solution is valid: {is_valid}")
+    # Create and use the solver
+    solver = ThermometersSolver(puzzle)
     
-    # Get solver information
-    info = solver_6x6.get_solver_info()
-    print(f"Model: {info['variables']} variables, {info['constraints']} constraints")
+    print("Solver information:")
+    info = solver.get_solver_info()
+    for key, value in info.items():
+        print(f"  {key}: {value}")
+    
+    print("\nSolving...")
+    start_time = time.time()
+    solution = solver.solve(verbose=False)
+    solve_time = time.time() - start_time
+    
+    if solution:
+        print(f"\nSolution found in {solve_time:.3f} seconds!")
+        print(f"Solution has {len(solution)} filled cells")
+        print(f"Solution: {sorted(list(solution))}")
+    else:
+        print("No solution found by solver!")
 
-# Solve the curved 4x4 puzzle
-print("\nSolving curved 4x4 puzzle...")
-solver_curved = ThermometersSolver(puzzle_curved)
-solution_curved = solver_curved.solve()
+# Load and solve example puzzles
+puzzle_6x6 = example_6x6()
+solve_puzzle(puzzle_6x6, "6x6")
 
-if solution_curved:
-    print(f"Curved 4x4 Solution found! Filled positions: {len(solution_curved)} cells")
-    print(f"Solution is valid: {puzzle_curved.validate_solution(solution_curved)[0]}")
+puzzle_4x4_curved = example_4x4_curved()
+solve_puzzle(puzzle_4x4_curved, "4x4 Curved")
+```
+
+### Output
+
+```
+============================================================
+SOLVING 6X6
+============================================================
+Solver information:
+  solver_type: SCIP 9.2.2 [LP solver: SoPlex 7.1.3]
+  num_variables: 36
+  num_constraints: 35
+  grid_size: 6x6
+  num_thermometers: 13
+  total_cells: 36
+
+Solving...
+
+Solution found in 0.002 seconds!
+Solution has 17 filled cells
+Solution: [(0, 0), (0, 3), (0, 4), (1, 3), (1, 4), (2, 4), (3, 4), (3, 5), (4, 0), (4, 1), (4, 2), (4, 3), (4, 5), (5, 0), (5, 1), (5, 2), (5, 3)]
+
+============================================================
+SOLVING 4X4 CURVED
+============================================================
+Solver information:
+  solver_type: SCIP 9.2.2 [LP solver: SoPlex 7.1.3]
+  num_variables: 16
+  num_constraints: 20
+  grid_size: 4x4
+  num_thermometers: 4
+  total_cells: 16
+
+Solving...
+
+Solution found in 0.001 seconds!
+Solution has 7 filled cells
+Solution: [(0, 0), (0, 2), (0, 3), (1, 2), (2, 1), (2, 2), (3, 1)]
 ```
 
 ## Waypoint System
