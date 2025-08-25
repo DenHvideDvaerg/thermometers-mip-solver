@@ -25,10 +25,10 @@ def example_4x4_curved():
         row_sums=[3, 1, 2, 1],
         col_sums=[1, 2, 3, 1],
         thermometer_waypoints=[
-            [(0, 0), (1, 0), (1, 1), (0, 1)],
-            [(2, 2), (0, 2), (0, 3), (2, 3)],
-            [(3, 1), (2, 1), (2, 0), (3, 0)],
-            [(3, 3), (3, 2)],
+            [(0, 0), (1, 0), (1, 1), (0, 1)],    # U-shaped thermometer starting in row 0
+            [(2, 2), (0, 2), (0, 3), (2, 3)],    # ∩-shaped thermometer starting in row 2
+            [(3, 1), (2, 1), (2, 0), (3, 0)],    # ∩-shaped thermometer starting in row 3
+            [(3, 3), (3, 2)],                    # Straight thermometer starting in row 3
         ]
     )
     return puzzle
@@ -39,69 +39,35 @@ def example_6x6():
         row_sums=[3, 2, 1, 2, 5, 4],
         col_sums=[3, 2, 2, 4, 4, 2],
         thermometer_waypoints=[
-            # Thermometer 1: Vertical starting in (0,0)
-            [(0, 0), (1, 0)],
-            # Thermometer 2: Horizontal starting in (0,2)  
-            [(0, 2), (0, 1)],
-            # Thermometer 3: Horizontal starting in (1,2)
-            [(1, 2), (1, 1)],
-            # Thermometer 4: Vertical starting in (1, 3)
-            [(1, 3), (0, 3)],
-            # Thermometer 5: Horizontal starting in (2,0)
-            [(2, 0), (2, 2)],
-            # Thermometer 6: Horizontal starting in (3,2)
-            [(3, 2), (3, 1)],
-            # Thermometer 7: Vertical starting in (3,3)
-            [(3, 3), (2, 3)],
-            # Thermometer 8: Vertical starting in (3,4)
-            [(3, 4), (0, 4)],
-            # Thermometer 9: Vertical starting in (3,5)
-            [(3, 5), (0, 5)],
-            # Thermometer 10: Vertical starting in (4,0)
-            [(4, 0), (3, 0)],
-            # Thermometer 11: Horizontal starting in (4,1)
-            [(4, 1), (4, 3)],
-            # Thermometer 12: Horizontal starting in (4,5)
-            [(4, 5), (4, 4)],
-            # Thermometer 13: Vertical starting in (5,0)
-            [(5, 0), (5, 5)],
+            [(0, 0), (1, 0)],               # Vertical thermometer starting in row 0
+            [(0, 2), (0, 1)],               # Horizontal thermometer starting in row 0
+            [(1, 2), (1, 1)],               # Horizontal thermometer starting in row 1
+            [(1, 3), (0, 3)],               # Vertical thermometer starting in row 1
+            [(2, 0), (2, 2)],               # Horizontal thermometer starting in row 2
+            [(3, 2), (3, 1)],               # Horizontal thermometer starting in row 3
+            [(3, 3), (2, 3)],               # Vertical thermometer starting in row 3
+            [(3, 4), (0, 4)],               # Long vertical thermometer starting in row 3
+            [(3, 5), (0, 5)],               # Long vertical thermometer starting in row 3
+            [(4, 0), (3, 0)],               # Vertical thermometer starting in row 4
+            [(4, 1), (4, 3)],               # Horizontal thermometer starting in row 4
+            [(4, 5), (4, 4)],               # Horizontal thermometer starting in row 4
+            [(5, 0), (5, 5)],               # Long horizontal thermometer starting in row 5
         ]
     )
     return puzzle
 
 def main():
-    print("="*80)
-    print("4x4 THERMOMETERS PUZZLE EXAMPLE")
-    print("="*80)
-    
-    puzzle_4x4 = example_4x4()
-    solve_puzzle(puzzle_4x4, "4x4")
-
-    print("="*80)
-    print("4x4 CURVED THERMOMETERS PUZZLE EXAMPLE")
-    print("="*80)
+    puzzle_6x6 = example_6x6()
+    solve_puzzle(puzzle_6x6, "6x6")
 
     puzzle_4x4_curved = example_4x4_curved()
     solve_puzzle(puzzle_4x4_curved, "4x4 Curved")
 
-    print("="*80)
-    print("6x6 THERMOMETERS PUZZLE EXAMPLE")
-    print("="*80)
-
-    puzzle_6x6 = example_6x6()
-    solve_puzzle(puzzle_6x6, "6x6")
 
 def solve_puzzle(puzzle, name):
     """Solve a thermometer puzzle and display results"""
-    print(f"\n{name} Puzzle: {puzzle}")
-    
-    # Show some thermometer examples
-    print(f"\nFirst 3 thermometers in {name} puzzle:")
-    for i, thermo in enumerate(puzzle.thermometers[:3]):
-        print(f"  Thermometer {i+1}: {thermo}")
-    
     print(f"\n" + "="*60)
-    print(f"SOLVING {name.upper()} WITH MIP SOLVER")
+    print(f"SOLVING {name.upper()}")
     print("="*60)
     
     # Create and use the solver
@@ -114,29 +80,13 @@ def solve_puzzle(puzzle, name):
     
     print("\nSolving...")
     start_time = time.time()
-    solution = solver.solve(verbose=True)
+    solution = solver.solve(verbose=False)
     solve_time = time.time() - start_time
     
     if solution:
         print(f"\nSolution found in {solve_time:.3f} seconds!")
         print(f"Solution has {len(solution)} filled cells")
-        
-        # For 4x4, compare with manual solution
-        if name == "4x4":
-            manual_solution = {
-                (0, 3), 
-                (1,0),
-                (1,1),
-                (1,2),
-                (2,1),
-                (2,2),
-                (3,3)
-            }
-            print(f"Manual solution: {sorted(manual_solution)}")
-            print(f"MIP solution: {sorted(solution)}")
-            print(f"Solutions match: {solution == manual_solution}")
-        else:
-            print(f"Solution: {sorted(list(solution))}")
+        print(f"Solution: {sorted(list(solution))}")
     else:
         print("No solution found by solver!")
 
