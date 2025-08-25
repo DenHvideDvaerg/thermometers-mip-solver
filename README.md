@@ -1,5 +1,9 @@
 # Thermometers MIP Solver
 
+[![CI](https://github.com/DenHvideDvaerg/thermometers-mip-solver/actions/workflows/CI.yml/badge.svg)](https://github.com/DenHvideDvaerg/thermometers-mip-solver/actions/workflows/CI.yml)
+[![Code Coverage](https://img.shields.io/codecov/c/github/DenHvideDvaerg/thermometers-mip-solver?color=blue)](https://codecov.io/gh/DenHvideDvaerg/thermometers-mip-solver)
+[![PyPI version](https://img.shields.io/pypi/v/thermometers-mip-solver?color=green)](https://pypi.org/project/thermometers-mip-solver/)
+[![Python](https://img.shields.io/pypi/pyversions/thermometers-mip-solver?color=blue)](https://pypi.org/project/thermometers-mip-solver/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A Thermometers puzzle solver using mathematical programming.
