@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "thermometers-mip-solver"
-version = "0.1.1"
+version = "0.1.2"
 description = "A Thermometers puzzle solver using Mixed Integer Programming (MIP)"
 readme = "README.md"
 authors = [{name = "Rasmus Ørnstrup Mikkelsen"}]
@@ -29,6 +29,7 @@ dependencies = [
 "Homepage" = "https://github.com/DenHvideDvaerg/thermometers-mip-solver"
 "Bug Reports" = "https://github.com/DenHvideDvaerg/thermometers-mip-solver/issues"
 "Source" = "https://github.com/DenHvideDvaerg/thermometers-mip-solver"
+"Documentation" = "https://github.com/DenHvideDvaerg/thermometers-mip-solver/blob/main/model.md"
 
 [tool.setuptools.packages.find]
 where = ["."]
