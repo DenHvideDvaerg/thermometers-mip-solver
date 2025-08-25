@@ -82,11 +82,3 @@ x_{rₖ₊₁,cₖ₊₁} ≤ x_{rₖ,cₖ}                          ∀Tᵢ ∈
 
 x_{i,j} ∈ {0,1}                                    ∀i ∈ I, ∀j ∈ J (Binary variables)
 ```
-
-## Implementation Notes
-
-- **Mathematical indexing**: This formulation uses 0-based indexing for consistency with Python implementation (rows 0 to m-1, columns 0 to n-1)
-- **Thermometer representation**: Thermometers are defined using waypoints that automatically expand to complete paths
-- **Constraint types**: The model uses only three essential constraint types for efficient solving
-- **Solver backend**: Implemented using Google OR-Tools with SCIP optimizer by default
-- **Complexity**: The model scales linearly with grid size and number of thermometers
