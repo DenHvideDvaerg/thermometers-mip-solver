@@ -212,8 +212,13 @@ class ThermometerPuzzle:
         # Check complete coverage
         expected_count = self.height * self.width
         if len(all_positions) != expected_count:
-            raise ValueError(f"Grid not completely filled: {len(all_positions)}/{expected_count} cells covered")
-    
+            # Calculated missing positions
+            missing_positions = [
+                (r, c) for r in range(self.height) for c in range(self.width)
+                if (r, c) not in all_positions
+            ]
+            raise ValueError(f"Grid not completely filled: {len(all_positions)}/{expected_count} cells covered. Missing: {missing_positions}")
+
     def is_valid_solution(self, filled_positions: Set[Tuple[int, int]]) -> bool:
         """Check if solution satisfies all constraints."""
         # Check thermometer fill constraints
