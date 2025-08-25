@@ -33,6 +33,42 @@ def example_4x4_curved():
     )
     return puzzle
 
+def example_6x6():
+    """6x6 Thermometers Puzzle ID: 14,708,221 from puzzle-thermometers.com"""
+    puzzle = ThermometerPuzzle(
+        row_sums=[3, 2, 1, 2, 5, 4],
+        col_sums=[3, 2, 2, 4, 4, 2],
+        thermometer_waypoints=[
+            # Thermometer 1: Vertical starting in (0,0)
+            [(0, 0), (1, 0)],
+            # Thermometer 2: Horizontal starting in (0,2)  
+            [(0, 2), (0, 1)],
+            # Thermometer 3: Horizontal starting in (1,2)
+            [(1, 2), (1, 1)],
+            # Thermometer 4: Vertical starting in (1, 3)
+            [(1, 3), (0, 3)],
+            # Thermometer 5: Horizontal starting in (2,0)
+            [(2, 0), (2, 2)],
+            # Thermometer 6: Horizontal starting in (3,2)
+            [(3, 2), (3, 1)],
+            # Thermometer 7: Vertical starting in (3,3)
+            [(3, 3), (2, 3)],
+            # Thermometer 8: Vertical starting in (3,4)
+            [(3, 4), (0, 4)],
+            # Thermometer 9: Vertical starting in (3,5)
+            [(3, 5), (0, 5)],
+            # Thermometer 10: Vertical starting in (4,0)
+            [(4, 0), (3, 0)],
+            # Thermometer 11: Horizontal starting in (4,1)
+            [(4, 1), (4, 3)],
+            # Thermometer 12: Horizontal starting in (4,5)
+            [(4, 5), (4, 4)],
+            # Thermometer 13: Vertical starting in (5,0)
+            [(5, 0), (5, 5)],
+        ]
+    )
+    return puzzle
+
 def main():
     print("="*80)
     print("4x4 THERMOMETERS PUZZLE EXAMPLE")
@@ -47,6 +83,13 @@ def main():
 
     puzzle_4x4_curved = example_4x4_curved()
     solve_puzzle(puzzle_4x4_curved, "4x4 Curved")
+
+    print("="*80)
+    print("6x6 THERMOMETERS PUZZLE EXAMPLE")
+    print("="*80)
+
+    puzzle_6x6 = example_6x6()
+    solve_puzzle(puzzle_6x6, "6x6")
 
 def solve_puzzle(puzzle, name):
     """Solve a thermometer puzzle and display results"""
