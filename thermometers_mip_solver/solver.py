@@ -53,14 +53,18 @@ class ThermometersSolver:
     def _add_row_sum_constraints(self) -> None:
         """Add constraints ensuring each row has the correct number of filled cells."""
         for row in range(self.puzzle.height):
-            row_vars = [self.cell_vars[(row, col)] for col in range(self.puzzle.width)]
-            self.solver.Add(sum(row_vars) == self.puzzle.row_sums[row])
+            # Skip rows with None values (missing constraints)
+            if self.puzzle.row_sums[row] is not None:
+                row_vars = [self.cell_vars[(row, col)] for col in range(self.puzzle.width)]
+                self.solver.Add(sum(row_vars) == self.puzzle.row_sums[row])
 
     def _add_col_sum_constraints(self) -> None:
         """Add constraints ensuring each column has the correct number of filled cells."""
         for col in range(self.puzzle.width):
-            col_vars = [self.cell_vars[(row, col)] for row in range(self.puzzle.height)]
-            self.solver.Add(sum(col_vars) == self.puzzle.col_sums[col])
+            # Skip columns with None values (missing constraints)
+            if self.puzzle.col_sums[col] is not None:
+                col_vars = [self.cell_vars[(row, col)] for row in range(self.puzzle.height)]
+                self.solver.Add(sum(col_vars) == self.puzzle.col_sums[col])
 
     def _add_thermometer_constraints(self) -> None:
         """

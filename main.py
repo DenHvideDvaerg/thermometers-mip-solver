@@ -56,12 +56,32 @@ def example_6x6():
     )
     return puzzle
 
+def example_5x5_curved_missing_values():
+    """5x5 'Evil' Thermometers Puzzle from https://en.gridpuzzle.com/thermometers/evil-5"""
+    puzzle = ThermometerPuzzle(
+        row_sums=[2, 3, None, 5, None],
+        col_sums=[None, None, 1, 4, 4],
+        thermometer_waypoints=[
+            [(0, 0), (0, 2), (2, 2)],            # L-shaped thermometer starting in row 0
+            [(2, 0), (1, 0), (1, 1), (2, 1)],    # ∩-shaped thermometer starting in row 2
+            [(2, 3), (0, 3), (0, 4)],            # L-shaped thermometer starting in row 2
+            [(3, 0), (3, 3)],                    # Straight thermometer starting in row 3
+            [(3, 4), (1, 4)],                    # Straight thermometer starting in row 3
+            [(4, 0), (4, 1)],                    # Straight thermometer starting in row 4
+            [(4, 2), (4, 4)],                    # Straight thermometer starting in row 4
+        ]
+    )
+    return puzzle
+
 def main():
     puzzle_6x6 = example_6x6()
     solve_puzzle(puzzle_6x6, "6x6")
 
     puzzle_4x4_curved = example_4x4_curved()
     solve_puzzle(puzzle_4x4_curved, "4x4 Curved")
+
+    puzzle_5x5_curved_missing_values = example_5x5_curved_missing_values()
+    solve_puzzle(puzzle_5x5_curved_missing_values, "5x5 Curved Missing Values")
 
 
 def solve_puzzle(puzzle, name):

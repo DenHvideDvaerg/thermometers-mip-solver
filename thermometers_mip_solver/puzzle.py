@@ -1,4 +1,4 @@
-from typing import List, Set, Tuple, Optional
+from typing import List, Set, Tuple, Optional, Union
 
 
 def _horizontal_range(row: int, start_col: int, end_col: int) -> List[Tuple[int, int]]:
@@ -146,37 +146,43 @@ class ThermometerPuzzle:
     """
     
     def __init__(
-        self, 
-        row_sums: List[int],
-        col_sums: List[int], 
+        self,
+        row_sums: List[Union[int, None]],
+        col_sums: List[Union[int, None]], 
         thermometer_waypoints: List[List[Tuple[int, int]]]
     ):
         """
         Args:
-            row_sums: Required filled cells per row
-            col_sums: Required filled cells per column
+            row_sums: Required filled cells per row (None for missing constraint)
+            col_sums: Required filled cells per column (None for missing constraint)
             thermometer_waypoints: List of waypoint lists, each defining a thermometer 
                                  (waypoints will be expanded to full paths automatically)
         """
         if not row_sums or not col_sums:
             raise ValueError("Row and column sums cannot be empty")
         
-        if any(s < 0 for s in row_sums) or any(s < 0 for s in col_sums):
+        # Filter out None values for validation
+        valid_row_sums = [s for s in row_sums if s is not None]
+        valid_col_sums = [s for s in col_sums if s is not None]
+        
+        if any(s < 0 for s in valid_row_sums) or any(s < 0 for s in valid_col_sums):
             raise ValueError("All sums must be non-negative")
         
-        if sum(row_sums) != sum(col_sums):
-            raise ValueError("Sum of row sums must equal sum of column sums")
+        # Only check sum equality if we have constraints for all rows and columns
+        if all(s is not None for s in row_sums) and all(s is not None for s in col_sums):
+            if sum(row_sums) != sum(col_sums):
+                raise ValueError("Sum of row sums must equal sum of column sums")
 
         self.height = len(row_sums)
         self.width = len(col_sums)
         self.row_sums = row_sums.copy()
         self.col_sums = col_sums.copy()
         
-        # Validate sum constraints
-        if any(s > self.width for s in row_sums):
+        # Validate sum constraints (only for non-None values)
+        if any(s > self.width for s in valid_row_sums):
             raise ValueError("Row sum cannot exceed grid width")
         
-        if any(s > self.height for s in col_sums):
+        if any(s > self.height for s in valid_col_sums):
             raise ValueError("Column sum cannot exceed grid height")
         
         # Create thermometers from waypoints
@@ -226,17 +232,19 @@ class ThermometerPuzzle:
             if not thermo.is_valid_fill_state(filled_positions):
                 return False
         
-        # Check row sums
+        # Check row sums (skip rows with None values)
         for row in range(self.height):
-            actual = sum(1 for r, _ in filled_positions if r == row)
-            if actual != self.row_sums[row]:
-                return False
+            if self.row_sums[row] is not None:
+                actual = sum(1 for r, _ in filled_positions if r == row)
+                if actual != self.row_sums[row]:
+                    return False
         
-        # Check column sums
+        # Check column sums (skip columns with None values)
         for col in range(self.width):
-            actual = sum(1 for _, c in filled_positions if c == col)
-            if actual != self.col_sums[col]:
-                return False
+            if self.col_sums[col] is not None:
+                actual = sum(1 for _, c in filled_positions if c == col)
+                if actual != self.col_sums[col]:
+                    return False
         
         return True
     

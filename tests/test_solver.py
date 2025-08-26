@@ -139,3 +139,30 @@ class TestThermometersSolver:
         # Should match the known solution
         expected = {(0, 0), (0, 2), (0, 3), (1, 2), (2, 1), (2, 2), (3, 1)}
         assert solution == expected
+
+    def test_solve_5x5_missing_values_example(self):
+        """Test solver with the 5x5 example from main.py that has missing constraints."""
+        puzzle = ThermometerPuzzle(
+            row_sums=[2, 3, None, 5, None],
+            col_sums=[None, None, 1, 4, 4],
+            thermometer_waypoints=[
+                [(0, 0), (0, 2), (2, 2)],            # L-shaped thermometer
+                [(2, 0), (1, 0), (1, 1), (2, 1)],    # ∩-shaped thermometer
+                [(2, 3), (0, 3), (0, 4)],            # L-shaped thermometer
+                [(3, 0), (3, 3)],                    # Straight thermometer
+                [(3, 4), (1, 4)],                    # Straight thermometer
+                [(4, 0), (4, 1)],                    # Straight thermometer
+                [(4, 2), (4, 4)],                    # Straight thermometer
+            ]
+        )
+        
+        solver = ThermometersSolver(puzzle)
+        solution = solver.solve()
+        
+        # Expected solution
+        expected_solution = {
+            (0, 3), (0, 4), (1, 0), (1, 3), (1, 4), (2, 0), (2, 3), (2, 4), 
+            (3, 0), (3, 1), (3, 2), (3, 3), (3, 4), (4, 0)
+        }
+
+        assert solution == expected_solution
