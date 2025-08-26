@@ -300,6 +300,35 @@ class TestThermometerPuzzle:
         )
         assert repr(puzzle) == "ThermometerPuzzle(2x2, 2 thermometers)"
 
+    def test_missing_values_creation_and_validation(self):
+        """Test creating a puzzle with missing row/column values."""
+        # Using the example from main.py
+        puzzle = ThermometerPuzzle(
+            row_sums=[2, 3, None, 5, None],
+            col_sums=[None, None, 1, 4, 4],
+            thermometer_waypoints=[
+                [(0, 0), (0, 2), (2, 2)],            # L-shaped thermometer starting in row 0
+                [(2, 0), (1, 0), (1, 1), (2, 1)],    # ∩-shaped thermometer starting in row 2
+                [(2, 3), (0, 3), (0, 4)],            # L-shaped thermometer starting in row 2
+                [(3, 0), (3, 3)],                    # Straight thermometer starting in row 3
+                [(3, 4), (1, 4)],                    # Straight thermometer starting in row 3
+                [(4, 0), (4, 1)],                    # Straight thermometer starting in row 4
+                [(4, 2), (4, 4)],                    # Straight thermometer starting in row 4
+            ]
+        )
+        
+        assert puzzle.height == 5
+        assert puzzle.width == 5
+        assert puzzle.row_sums == [2, 3, None, 5, None]
+        assert puzzle.col_sums == [None, None, 1, 4, 4]
+
+        # Validate solution
+        solution = {
+            (0, 3), (0, 4), (1, 0), (1, 3), (1, 4), (2, 0), (2, 3), (2, 4), 
+            (3, 0), (3, 1), (3, 2), (3, 3), (3, 4), (4, 0)
+        }
+        
+        assert puzzle.is_valid_solution(solution)
 
 class TestThermometerIntegration:
     """Integration tests for Thermometer and ThermometerPuzzle working together."""

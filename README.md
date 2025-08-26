@@ -14,6 +14,7 @@ Thermometers is a logic puzzle where you must fill thermometers on a grid with m
 
 - **Continuous filling from bulb** - thermometers fill from bulb end without gaps
 - **Row and column constraints** - each row/column must have a specific number of filled cells
+  - **Missing constraints variant** - supports puzzles where some row/column constraints are unknown (specified as `None`)
 
 This solver models the puzzle as a **Mixed Integer Programming (MIP)** problem to find solutions.
 
@@ -64,25 +65,28 @@ def example_6x6():
     return puzzle
 ```
 
-### 4x4 Puzzle with Curved Thermometers
+### 5x5 Puzzle with Curved Thermometers and Missing Constraints
 
-This 4x4 puzzle shows how the solver handles curved thermometers with multiple waypoints, creating L-shaped and complex paths:
+This 5x5 puzzle demonstrates advanced features: curved thermometers with multiple waypoints and missing row/column constraints (shown as `None`):
 
 | Puzzle | Solution |
 |--------|----------|
-| <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/4x4_curved_19,253,725.png" width="200"> | <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/4x4_curved_19,253,725_solution.png" width="200"> |
+| <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/5x5_curved_missing_values.png" width="200"> | <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/5x5_curved_missing_values.png_solution.png" width="200"> |
 
 ```python
-def example_4x4_curved():
-    """Curved 4x4 Thermometers Puzzle ID: 19,253,725 from puzzle-thermometers.com"""
+def example_5x5_curved_missing_values():
+    """5x5 'Evil' Thermometers Puzzle from https://en.gridpuzzle.com/thermometers/evil-5"""
     puzzle = ThermometerPuzzle(
-        row_sums=[3, 1, 2, 1],
-        col_sums=[1, 2, 3, 1],
+        row_sums=[2, 3, None, 5, None],         # Rows 2 and 4 have no constraint
+        col_sums=[None, None, 1, 4, 4],         # Columns 0 and 1 have no constraint
         thermometer_waypoints=[
-            [(0, 0), (1, 0), (1, 1), (0, 1)],    # U-shaped thermometer starting in row 0
-            [(2, 2), (0, 2), (0, 3), (2, 3)],    # ∩-shaped thermometer starting in row 2
-            [(3, 1), (2, 1), (2, 0), (3, 0)],    # ∩-shaped thermometer starting in row 3
-            [(3, 3), (3, 2)],                    # Straight thermometer starting in row 3
+            [(0, 0), (0, 2), (2, 2)],            # L-shaped thermometer
+            [(2, 0), (1, 0), (1, 1), (2, 1)],    # ∩-shaped thermometer
+            [(2, 3), (0, 3), (0, 4)],            # L-shaped thermometer
+            [(3, 0), (3, 3)],                    # Straight thermometer
+            [(3, 4), (1, 4)],                    # Straight thermometer
+            [(4, 0), (4, 1)],                    # Straight thermometer
+            [(4, 2), (4, 4)],                    # Straight thermometer
         ]
     )
     return puzzle
@@ -124,8 +128,8 @@ def solve_puzzle(puzzle, name):
 puzzle_6x6 = example_6x6()
 solve_puzzle(puzzle_6x6, "6x6")
 
-puzzle_4x4_curved = example_4x4_curved()
-solve_puzzle(puzzle_4x4_curved, "4x4 Curved")
+puzzle_5x5_curved_missing = example_5x5_curved_missing_values()
+solve_puzzle(puzzle_5x5_curved_missing, "5x5 Curved Missing Values")
 ```
 
 ### Output
@@ -149,21 +153,21 @@ Solution has 17 filled cells
 Solution: [(0, 0), (0, 3), (0, 4), (1, 3), (1, 4), (2, 4), (3, 4), (3, 5), (4, 0), (4, 1), (4, 2), (4, 3), (4, 5), (5, 0), (5, 1), (5, 2), (5, 3)]
 
 ============================================================
-SOLVING 4X4 CURVED
+SOLVING 5X5 CURVED MISSING VALUES
 ============================================================
 Solver information:
   solver_type: SCIP 9.2.2 [LP solver: SoPlex 7.1.3]
-  num_variables: 16
-  num_constraints: 20
-  grid_size: 4x4
-  num_thermometers: 4
-  total_cells: 16
+  num_variables: 25
+  num_constraints: 24
+  grid_size: 5x5
+  num_thermometers: 7
+  total_cells: 25
 
 Solving...
 
-Solution found in 0.001 seconds!
-Solution has 7 filled cells
-Solution: [(0, 0), (0, 2), (0, 3), (1, 2), (2, 1), (2, 2), (3, 1)]
+Solution found in 0.002 seconds!
+Solution has 14 filled cells
+Solution: [(0, 3), (0, 4), (1, 0), (1, 3), (1, 4), (2, 0), (2, 3), (2, 4), (3, 0), (3, 1), (3, 2), (3, 3), (3, 4), (4, 0)]
 ```
 
 ## Waypoint System

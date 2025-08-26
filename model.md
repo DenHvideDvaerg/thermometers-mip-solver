@@ -6,8 +6,8 @@ This document provides a formal mathematical programming formulation of the Ther
 
 Given:
 - An **m × n** grid representing the puzzle board
-- **Row mercury requirements** R = {r₁, r₂, ..., rₘ} where rᵢ is the required number of mercury-filled cells in row i
-- **Column mercury requirements** C = {c₁, c₂, ..., cₙ} where cⱼ is the required number of mercury-filled cells in column j
+- **Row mercury requirements** R = {r₁, r₂, ..., rₘ} where rᵢ is the required number of mercury-filled cells in row i, or undefined if no requirement is given
+- **Column mercury requirements** C = {c₁, c₂, ..., cₙ} where cⱼ is the required number of mercury-filled cells in column j, or undefined if no requirement is given
 - **Thermometer paths** T = {T₁, T₂, ..., Tₖ} where each Tᵢ is an ordered sequence of cell positions representing a thermometer
 
 **Objective:** Find which cells to fill with mercury to satisfy all Thermometers puzzle rules.
@@ -38,17 +38,17 @@ minimize 0
 ## Constraints
 
 ### 1. Row Sum Constraints
-Each row must contain exactly the required number of mercury-filled cells:
+Each row with a defined constraint must contain exactly the required number of mercury-filled cells. Rows with undefined constraints are excluded:
 
 ```
-Σⱼ x_{i,j} = rᵢ    ∀i ∈ I
+Σⱼ x_{i,j} = rᵢ    ∀i ∈ I where rᵢ is defined
 ```
 
 ### 2. Column Sum Constraints  
-Each column must contain exactly the required number of mercury-filled cells:
+Each column with a defined constraint must contain exactly the required number of mercury-filled cells. Columns with undefined constraints are excluded:
 
 ```
-Σᵢ x_{i,j} = cⱼ    ∀j ∈ J
+Σᵢ x_{i,j} = cⱼ    ∀j ∈ J where cⱼ is defined
 ```
 
 ### 3. Thermometer Continuity Constraints
@@ -74,11 +74,11 @@ minimize 0
 
 **Subject to:**
 ```
-Σⱼ x_{i,j} = rᵢ                                    ∀i ∈ I         (Row sums)
+Σⱼ x_{i,j} = rᵢ                 ∀i ∈ I where rᵢ is defined    (Row sums)
 
-Σᵢ x_{i,j} = cⱼ                                    ∀j ∈ J         (Column sums)
+Σᵢ x_{i,j} = cⱼ                 ∀j ∈ J where cⱼ is defined    (Column sums)
 
-x_{rₖ₊₁,cₖ₊₁} ≤ x_{rₖ,cₖ}                          ∀Tᵢ ∈ T, ∀k    (Thermometer continuity)
+x_{rₖ₊₁,cₖ₊₁} ≤ x_{rₖ,cₖ}         ∀Tᵢ ∈ T, ∀k ∈ {1, 2, ..., |Tᵢ|-1}    (Thermometer continuity)
 
-x_{i,j} ∈ {0,1}                                    ∀i ∈ I, ∀j ∈ J (Binary variables)
+x_{i,j} ∈ {0,1}                 ∀i ∈ I, ∀j ∈ J                (Binary variables)
 ```
