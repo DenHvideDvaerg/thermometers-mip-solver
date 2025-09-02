@@ -38,7 +38,7 @@ This 6x6 puzzle demonstrates the solver with straight thermometers of various le
 
 | Puzzle | Solution |
 |--------|----------|
-| <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/6x6_14,708,221.png" width="200"> | <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/6x6_14,708,221_solution.png" width="200"> |
+| <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/6x6_14,708,221.png" width="400"> | <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/6x6_14,708,221_solution.png" width="400"> |
 
 ```python
 def example_6x6():
@@ -71,7 +71,7 @@ This 5x5 puzzle demonstrates advanced features: curved thermometers with multipl
 
 | Puzzle | Solution |
 |--------|----------|
-| <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/5x5_curved_missing_values.png" width="200"> | <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/5x5_curved_missing_values.png_solution.png" width="200"> |
+| <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/5x5_curved_missing_values.png" width="400"> | <img src="https://github.com/DenHvideDvaerg/thermometers-mip-solver/raw/main/images/5x5_curved_missing_values.png_solution.png" width="400"> |
 
 ```python
 def example_5x5_curved_missing_values():
